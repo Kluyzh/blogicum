@@ -13,7 +13,8 @@ class PostForm(forms.ModelForm):
             'text',
             'pub_date',
             'location',
-            'category'
+            'category',
+            'image'
         )
         widgets = {'pub_date': forms.DateTimeInput(attrs={'type': 'datetime-local'})}
 

@@ -85,6 +85,8 @@ class Post(CreationTimeAndPublish):
         on_delete=models.SET_NULL,
         null=True
     )
+    image = models.ImageField('Фото', upload_to='post_images', blank=True)
+
     objects = PostQuerySet.as_manager()
 
     class Meta(CreationTimeAndPublish.Meta):

@@ -150,3 +150,8 @@ media/
 
 sent_emails/
 
+.isort.cfg
+
+db.json
+
+sent_emails/
