@@ -105,8 +105,6 @@ def edit_post(request, post_id):
         return redirect('blog:post_detail', post_id=post_id)
     form = PostForm(request.POST or None, request.FILES or None, instance=instance)
     if form.is_valid():
-        # if not request.user.is_authenticated:
-        #     return redirect('blog:post_detail', post_id=post_id)
         form.save()
         return redirect('blog:post_detail', post_id=post_id)
     return render(request, 'blog/create.html', {'form': form})
@@ -115,6 +113,7 @@ def edit_post(request, post_id):
 @login_required
 def edit_profile(request):
     user = request.user
+    # user = get_object_or_404(User, username='Ilya')
     form = UserForm(request.POST or None, instance=user)
     if request.method == 'POST' and form.is_valid():
         form.save()
