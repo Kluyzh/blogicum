@@ -13,8 +13,7 @@ User = get_user_model()
 
 def short_paginator(user_request, query_set, list_on_page):
     paginator = Paginator(query_set, list_on_page)
-    page_number = user_request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator.get_page(user_request.GET.get('page'))
     return page_obj
 
 
