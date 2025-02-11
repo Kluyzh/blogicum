@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 
-from .models import Category, Location, Post, User
+from .models import Category, Comment, Location, Post, User
 
 admin.site.unregister(Group)
 admin.site.unregister(User)
@@ -59,6 +59,7 @@ class CategoryAdmin(admin.ModelAdmin):
     )
 
 
+admin.site.register(Comment)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Location, LocationAdmin)
 admin.site.register(Post, PostAdmin)

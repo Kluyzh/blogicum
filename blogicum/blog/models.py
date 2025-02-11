@@ -70,7 +70,8 @@ class Post(CreationTimeAndPublish):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='Автор публикации'
+        verbose_name='Автор публикации',
+        related_name='posts'
     )
     location = models.ForeignKey(
         Location,
