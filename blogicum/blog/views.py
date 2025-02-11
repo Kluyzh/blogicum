@@ -11,13 +11,18 @@ from .models import Category, Comment, Post
 User = get_user_model()
 
 
+def short_paginator(user_request, query_set, list_on_page):
+    paginator = Paginator(query_set, list_on_page)
+    page_number = user_request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return page_obj
+
+
 def index(request):
     post_list = Post.objects.annotate(
         comment_count=Count('comments')
     ).filtered_posts('category').order_by('-pub_date')
-    paginator = Paginator(post_list, POSTS_ON_MAIN_PAGE)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = short_paginator(request, post_list, POSTS_ON_MAIN_PAGE)
     return render(request, 'blog/index.html', {'page_obj': page_obj})
 
 
@@ -46,16 +51,9 @@ def category_posts(request, category_slug):
         slug=category_slug
     )
     post_list = category.posts.filtered_posts()
-    paginator = Paginator(post_list, POSTS_ON_MAIN_PAGE)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = short_paginator(request, post_list, POSTS_ON_MAIN_PAGE)
     context = {'category': category, 'page_obj': page_obj}
-
-    return render(
-        request,
-        'blog/category.html',
-        context
-    )
+    return render(request, 'blog/category.html', context)
 
 
 def profile(request, username):
@@ -68,9 +66,7 @@ def profile(request, username):
         posts = Post.objects.filter(author=profile.id).annotate(
             comment_count=Count('comments')
         ).order_by('-pub_date').filtered_posts()
-    paginator = Paginator(posts, POSTS_ON_MAIN_PAGE)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    page_obj = short_paginator(request, posts, POSTS_ON_MAIN_PAGE)
     context = {
         'profile': profile,
         'page_obj': page_obj,
