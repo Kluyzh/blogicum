@@ -7,12 +7,7 @@ from .queryset import PostQuerySet
 User = get_user_model()
 
 
-class CreationTimeAndPublish(models.Model):
-    is_published = models.BooleanField(
-        'Опубликовано',
-        default=True,
-        help_text='Снимите галочку, чтобы скрыть публикацию.'
-    )
+class CreationTime(models.Model):
     created_at = models.DateTimeField('Добавлено', auto_now_add=True)
 
     class Meta:
@@ -20,7 +15,18 @@ class CreationTimeAndPublish(models.Model):
         ordering = ('-created_at',)
 
 
-class Category(CreationTimeAndPublish):
+class Publish(CreationTime):
+    is_published = models.BooleanField(
+        'Опубликовано',
+        default=True,
+        help_text='Снимите галочку, чтобы скрыть публикацию.'
+    )
+
+    class Meta(CreationTime.Meta):
+        abstract = True
+
+
+class Category(Publish):
     title = models.CharField('Заголовок', max_length=MAX_LENGTH)
     description = models.TextField('Описание')
     slug = models.SlugField(
@@ -32,7 +38,7 @@ class Category(CreationTimeAndPublish):
         )
     )
 
-    class Meta(CreationTimeAndPublish.Meta):
+    class Meta(Publish.Meta):
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
@@ -43,10 +49,10 @@ class Category(CreationTimeAndPublish):
         return self.title[:LENGTH_OF_SELF_NAME] + ending
 
 
-class Location(CreationTimeAndPublish):
+class Location(Publish):
     name = models.CharField('Название места', max_length=MAX_LENGTH)
 
-    class Meta(CreationTimeAndPublish.Meta):
+    class Meta(Publish.Meta):
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
 
@@ -57,7 +63,7 @@ class Location(CreationTimeAndPublish):
         return self.name[:LENGTH_OF_SELF_NAME] + ending
 
 
-class Post(CreationTimeAndPublish):
+class Post(Publish):
     title = models.CharField('Заголовок', max_length=MAX_LENGTH)
     text = models.TextField('Текст')
     pub_date = models.DateTimeField(
@@ -90,7 +96,7 @@ class Post(CreationTimeAndPublish):
 
     objects = PostQuerySet.as_manager()
 
-    class Meta(CreationTimeAndPublish.Meta):
+    class Meta(Publish.Meta):
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
         ordering = ('-pub_date',)
@@ -103,15 +109,20 @@ class Post(CreationTimeAndPublish):
         return self.title[:LENGTH_OF_SELF_NAME] + ending
 
 
-class Comment(models.Model):
+class Comment(CreationTime):
     text = models.TextField('Комментарий')
     post = models.ForeignKey(
         Post,
         on_delete=models.CASCADE,
         related_name='comments',
     )
-    created_at = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='comments'
+    )
 
-    class Meta:
+    class Meta(CreationTime.Meta):
         ordering = ('created_at',)
+        verbose_name = 'комментарий'
+        verbose_name_plural = 'Комментарии'
